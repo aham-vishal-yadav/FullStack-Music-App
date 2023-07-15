@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
@@ -48,7 +46,7 @@ const UploadModal = () => {
       }
       const uniqId = uniqid();
 
-      //upload song
+      // Upload song
       const { data: songData, error: songError } = await supabaseClient.storage
         .from('songs')
         .upload(`song-${values.title}-${uniqId}`, songFile, {
@@ -61,6 +59,7 @@ const UploadModal = () => {
         return toast.error('Failed song upload');
       }
 
+      // Upload image
       const { data: imageData, error: imageError } =
         await supabaseClient.storage
           .from('images')
@@ -68,11 +67,13 @@ const UploadModal = () => {
             cacheControl: '3600',
             upsert: false,
           });
+
       if (imageError) {
         setisLoading(false);
         return toast.error('Failed image upload');
       }
 
+      // Insert data into the songs table
       const { error: supabaseError } = await supabaseClient
         .from('songs')
         .insert({
@@ -87,6 +88,7 @@ const UploadModal = () => {
         setisLoading(false);
         return toast.error(supabaseError.message);
       }
+
       router.refresh();
       setisLoading(false);
       toast.success('Song created!');
